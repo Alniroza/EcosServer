@@ -13,10 +13,14 @@ remote func matchmaking():
 
 
 #Les creamos partidas de juego a los jugadores. 
-remote func new_gamelobby_server(call_id, gamelobby_name):
+remote func new_gamelobby_server(call_id):
+	#Aca se debe creear un nuevo GameLobby por cada matchmaking concluido.
+	#TODO cambiar nombres
+	var gamelobby_name = "GameLobby123"
 	print("Creando nuevo gamelobbyServer - ", gamelobby_name)
-	if 0:
-	#get_parent().get_node_or_null(gamelobby_name):
+	var asked_gamelobby = get_parent().get_node_or_null(gamelobby_name)
+	if asked_gamelobby:
+		print("Ya existe este Lobby")
 		pass
 	else:
 		var gamelobby_instance = GameLobby.instance()
@@ -24,6 +28,6 @@ remote func new_gamelobby_server(call_id, gamelobby_name):
 		gamelobby_instance.set_network_master(1)
 		get_parent().add_child(gamelobby_instance)
 		
-		rpc("new_gamelobby", 1, gamelobby_name)
+	rpc_id(call_id ,"new_gamelobby", 1, gamelobby_name)
 	pass
 	
