@@ -6,7 +6,7 @@ onready var GameLobby = preload("res://ServerScenes/GameLobbyServer.tscn")
 var connected_players = []
 
 #Encargado de todo lo relacionado a la interaccion de los jugadores pre-partida
-
+#Como conectar a partidas, comunicarse con amigos, buscar partida, etc.
 remote func matchmaking():
 	#TODO Esta funcion deberia ser llamada para crear game lobbys
 	pass
