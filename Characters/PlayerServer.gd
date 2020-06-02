@@ -1,7 +1,12 @@
 extends Node2D
 
-# Este nodo es una instancia de servidor del jugador. 
-# Es el encargado de reenviar las señales recibidas por el servidor a los demas jugadores.
+#Esta clase se encarga de recopilar la informacion de un Player cliente y corroborar
+#que existe en la BdD. Tiene funcionalidades como enviar mensaje privado, agregar amigos,
+#invitar a partida, etc.
+
+#Se debe diferenciar de un Character, que son los personajes que se usan en match. 
+
+
 var my_id
 
 func _ready():
