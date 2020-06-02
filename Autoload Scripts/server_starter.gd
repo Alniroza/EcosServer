@@ -6,7 +6,14 @@ const MAX_PLAYERS = 100
 
 onready var PlayerServer = preload("res://Characters/PlayerServer.tscn")
 
-	
+#Necesitamos cargar la BdD de las cuentas existentes. Por ahora, sera un dicc.
+#Futuro podria ser simplemente un Txt
+onready var players_database = {
+	1: {"username": "server", "password": "dinosaurio", "etc":0},
+	2: {"username": "server", "password": "dinosaurio", "etc":0}
+	}
+
+
 # Informacion de los jugadores conectados al servidor
 var connected_ids = []
 # Nuestra informacion (talvez innecesario)

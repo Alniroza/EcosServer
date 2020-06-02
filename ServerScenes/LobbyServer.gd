@@ -7,8 +7,10 @@ var connected_players = []
 
 #Encargado de todo lo relacionado a la interaccion de los jugadores pre-partida
 #Como conectar a partidas, comunicarse con amigos, buscar partida, etc.
-remote func matchmaking():
-	#TODO Esta funcion deberia ser llamada para crear game lobbys
+remote func matchmaking(player):
+	#TODO Esta funcion deberia ser llamada para juntar a los jugadores
+	var sons = $GameLobbies.get_sons
+	for son in 
 	pass
 
 

@@ -6,6 +6,8 @@ extends Node2D
 
 #Se debe diferenciar de un Character, que son los personajes que se usan en match. 
 
+#TODO Guardar una identificacion unica de cada jugador en el servidor
+#que contenga informacion personal (pass, nombre, correo) y estadisticas del jugador.
 
 var my_id
 
@@ -19,6 +21,3 @@ remote func create_char(id, gamelobby_name):
 	
 	pass
 	
-func set_id(id):
-	my_id = id
-	return 0

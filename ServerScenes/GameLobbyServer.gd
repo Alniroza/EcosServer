@@ -2,7 +2,7 @@ extends Node2D
 
 onready var SurvivorServer = preload("res://Characters/SurvivorServer/SurvivorServer.tscn")
 
-var matchplayers = []
+var match_players = []
 
 func _ready():
 	pass
@@ -10,7 +10,7 @@ func _ready():
 
 remote func request_character(charname, player_id):
 	print("Se solicita el personaje ", charname)
-	matchplayers.append(player_id)
+	match_players.append(player_id)
 	rpc("create_character", charname, player_id)
 	pass
 	
