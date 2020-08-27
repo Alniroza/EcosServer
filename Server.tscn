@@ -6,6 +6,6 @@
 
 [node name="Lobby" parent="." instance=ExtResource( 1 )]
 
-[node name="GameLobbies" type="Node2D" parent="Lobby"]
+[node name="Gamelobbies" type="Node2D" parent="Lobby"]
 
 [node name="TestPlayer1" type="Node2D" parent="Lobby"]

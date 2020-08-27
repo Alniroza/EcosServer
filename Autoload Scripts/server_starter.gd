@@ -4,13 +4,13 @@ const SERVER_IP = "127.0.0.1"
 const SERVER_PORT = 9000
 const MAX_PLAYERS = 100
 
-onready var PlayerServer = preload("res://Characters/PlayerServer.tscn")
+
 
 #Necesitamos cargar la BdD de las cuentas existentes. Por ahora, sera un dicc.
 #Futuro podria ser simplemente un Txt
 onready var players_database = {
 	1: {"username": "server", "password": "dinosaurio", "etc":0},
-	2: {"username": "server", "password": "dinosaurio", "etc":0}
+	2: {"username": "a_player", "password": "happy", "etc":0}
 	}
 
 
@@ -37,17 +37,11 @@ func _ready():
 
 func _player_connected(id):
 	# Called on both clients and server when a peer connects. Send my info to it.
-	#Configuramos player
-	var player_instance = PlayerServer.instance()
-	player_instance.set_name(str(id))
-	player_instance.set_network_master(id)
-	player_instance.set_id(id)
 	
-	#Agregamos al Lobby un nuevo Player, si no existe.
-	var Lobby = get_parent().get_node("root").get_node("Lobby")
-	if(Lobby.connected_players.find(id) == -1): #here previously?
-		Lobby.add_child(player_instance)
-		Lobby.connected_players.append(id)
+	#Autorizamos al player
+	#TODO
+	
+	
 	pass
 	
 func _player_disconnected(id):
@@ -64,3 +58,4 @@ func _server_disconnected():
 
 func _connected_fail():
 	pass # Could not even connect to server; abort.
+	
