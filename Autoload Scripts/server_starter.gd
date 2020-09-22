@@ -13,11 +13,9 @@ onready var players_database = {
 	2: {"username": "a_player", "password": "happy", "etc":0}
 	}
 
-
 # Informacion de los jugadores conectados al servidor
 var connected_ids = []
 # Nuestra informacion (talvez innecesario)
-var my_info = { name = "MainServer" }
 
 func _ready():
 	#Conectamos señales
@@ -33,7 +31,9 @@ func _ready():
 	peer.create_server(SERVER_PORT, MAX_PLAYERS)
 	get_tree().set_network_peer(peer)
 	print("El servidor esta ON en puerto ", SERVER_PORT)
-	pass
+		
+
+
 
 func _player_connected(id):
 	# Called on both clients and server when a peer connects. Send my info to it.
