@@ -21,7 +21,7 @@ run/main_scene="res://Server.tscn"
 [autoload]
 
 PlayerConector="*res://Autoload Scripts/server_starter.gd"
-LobbyServer="*res://ServerScenes/LobbyServer.gd"
+LobbyServer="*res://Autoload Scripts/LobbyServer.gd"
 
 [rendering]
 

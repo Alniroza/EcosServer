@@ -10,6 +10,8 @@ onready var PlayersDatabase = [
 	{"username" : "a", "password" : "a"},
 	{"username" : "b", "password" : "b"}
 	]
+	
+var new_registered_player={}
 var Players_connected={}
 
 var isparty
@@ -53,6 +55,10 @@ remote func registry_user(usern,passw,idpeer):
 			rpc_id(idpeer,"_denied_registry")
 			exist=true
 	if exist != true:
+		new_registered_player["username"] = usern
+		new_registered_player["password"] = passw
+		PlayersDatabase.append(new_registered_player)
+		new_registered_player={}
 		rpc_id(idpeer,"_accept_registry")
 		
 
@@ -135,7 +141,7 @@ remote func matchmaking(id, gamemode,players,party):
 		countmode2 = 1
 	if gamemode== "modo1":
 		for matchmodel1ready in PlayersWaitingmode1:
-			if PlayersWaitingmode1[matchmodel1ready].size() == 3:
+			if PlayersWaitingmode1[matchmodel1ready].size() == 2:
 				new_Gamelobby(gamemode,PlayersWaitingmode1[matchmodel1ready],false)
 				PlayersWaitingmode1.erase(matchmodel1ready)
 	if gamemode == "modo2":

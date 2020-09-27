@@ -13,6 +13,8 @@ onready var players_database = {
 	2: {"username": "a_player", "password": "happy", "etc":0}
 	}
 
+var prueba = []
+var new_player={}
 # Informacion de los jugadores conectados al servidor
 var connected_ids = []
 # Nuestra informacion (talvez innecesario)
@@ -31,6 +33,10 @@ func _ready():
 	peer.create_server(SERVER_PORT, MAX_PLAYERS)
 	get_tree().set_network_peer(peer)
 	print("El servidor esta ON en puerto ", SERVER_PORT)
+	new_player["nombre"]="peero"
+	new_player["pass"]="holo"
+	prueba.append(new_player)
+	print(prueba)
 		
 
 
