@@ -12,9 +12,8 @@ onready var players_database = {
 	1: {"username": "server", "password": "dinosaurio", "etc":0},
 	2: {"username": "a_player", "password": "happy", "etc":0}
 	}
-
 var prueba = []
-var new_player={}
+var new_player={1:[3,1],2:[4,7]}
 # Informacion de los jugadores conectados al servidor
 var connected_ids = []
 # Nuestra informacion (talvez innecesario)
@@ -33,10 +32,8 @@ func _ready():
 	peer.create_server(SERVER_PORT, MAX_PLAYERS)
 	get_tree().set_network_peer(peer)
 	print("El servidor esta ON en puerto ", SERVER_PORT)
-	new_player["nombre"]="peero"
-	new_player["pass"]="holo"
-	prueba.append(new_player)
-	print(prueba)
+	for a in new_player.values()[0]:
+		print (a)
 		
 
 
@@ -57,6 +54,7 @@ func _player_disconnected(id):
 	pass
 
 func _connected_ok():
+	
 	pass # Only called on clients, not server. Will go unused; not useful here.
 
 func _server_disconnected():

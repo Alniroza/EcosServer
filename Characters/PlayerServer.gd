@@ -10,12 +10,15 @@ extends Node2D
 #que contenga informacion personal (pass, nombre, correo) y estadisticas del jugador.
 #UNA BASE DE DATOS, PUEDE SER UN TXT
 
-var id
+var Theid
 var username
 var scores
 
 func _ready():
 	pass
+
+func _set_id(id):
+	Theid=id
 
 remote func create_char(id, gamelobby_name):
 #	var survivor_instace = Survivor.instance()

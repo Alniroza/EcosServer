@@ -11,8 +11,10 @@ onready var PlayersDatabase = [
 	{"username" : "b", "password" : "b"}
 	]
 	
+
 var new_registered_player={}
 var Players_connected={}
+var Player_Selection={}
 
 var isparty
 var countlobby = 1
@@ -102,8 +104,9 @@ master func new_Player(Player, id):
 	
 
 #Player es la informacion del que busca partida, y el gamemode que elige.
-remote func matchmaking(id, gamemode,players,party):
+remote func matchmaking(id, gamemode,players,party,player_election,player_name,party_player_election):
 	if party == false:
+		Player_Selection[id]=[player_name,player_election]
 		if gamemode == "modo1" :
 			WaitingMode1=PlayersWaitingmode1[1]
 			WaitingMode1.append(id)
@@ -113,6 +116,9 @@ remote func matchmaking(id, gamemode,players,party):
 			WaitingMode2.append(id)
 			PlayersWaitingmode2[1]=WaitingMode2
 	else:
+		Player_Selection[id]=[player_name,player_election]
+		for d in party_player_election:
+			Player_Selection[d]=party_player_election[d]
 		if gamemode == "modo1" :
 			var joined = false
 			for playersmode1 in PlayersWaitingmode1:
@@ -177,7 +183,10 @@ remote func new_Gamelobby(gamemode,players,isteam):
 	var gamelobby_name = "GameLobby"+str(countlobby)
 	print(players) 
 	var gamelobby_config = {}
+	var team_selection={}
 	if isteam == false:
+		for a in players:
+			team_selection[a]=Player_Selection[a]
 		gamelobby_config = {
 			"name": gamelobby_name,
 			"gamemode": "versus",
@@ -185,6 +194,8 @@ remote func new_Gamelobby(gamemode,players,isteam):
 			"elo": 0
 			}
 	elif isteam == true:
+		for a in players:
+			team_selection[a]=Player_Selection[a]
 		gamelobby_config = {
 			"name": gamelobby_name,
 			"gamemode": "versus",
@@ -208,6 +219,7 @@ remote func new_Gamelobby(gamemode,players,isteam):
 			instancia.set_name(str(a))
 			instancia.set_network_master(a)
 			Gamelobby_instance.add_child(instancia)
+			rpc_id(a,"_Time_to_play",team_selection)
 	else:
 		for a in gamelobby_config["first_team"]:
 			var player : PackedScene = load("res://Characters/Survivor/Survivor.tscn")
