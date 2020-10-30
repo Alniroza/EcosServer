@@ -8,13 +8,20 @@ onready var PlayersDatabase = [
 	{"username" : "goduser", "password" : "goduser"},
 	{"username" : "god", "password" : "god"},
 	{"username" : "a", "password" : "a"},
-	{"username" : "b", "password" : "b"}
+	{"username" : "b", "password" : "b"},
+	{"username" : "gabriel", "password" : "gabriel"},
+	{"username" : "alonso", "password" : "alonso"},
+	{"username" : "alex", "password" : "alex"},
+	{"username" : "franco", "password" : "franco"},
+	{"username" : "Goku", "password" : "Goku"},
+	{"username" : "Piñera", "password" : "Piñera"},
+	{"username" : "c", "password" : "c"}
 	]
 	
 
 var new_registered_player={}
 var Players_connected={}
-var Player_Selection={}
+var Player_Selection={}  #[id] : nombre,eleccion de personaje
 
 var isparty
 var countlobby = 1
@@ -108,40 +115,58 @@ remote func matchmaking(id, gamemode,players,party,player_election,player_name,p
 	if party == false:
 		Player_Selection[id]=[player_name,player_election]
 		if gamemode == "modo1" :
-			WaitingMode1=PlayersWaitingmode1[1]
-			WaitingMode1.append(id)
-			PlayersWaitingmode1[1]=WaitingMode1
+			if PlayersWaitingmode1.size()>0:
+				WaitingMode1=PlayersWaitingmode1[1]
+				WaitingMode1.append(id)
+				PlayersWaitingmode1[1]=WaitingMode1
+			else:
+				PlayersWaitingmode1[1]=[id]
 		if gamemode == "modo2" :
-			WaitingMode2=PlayersWaitingmode2[1]
-			WaitingMode2.append(id)
-			PlayersWaitingmode2[1]=WaitingMode2
+			var joined = false
+			var lastkey
+			if PlayersWaitingmode2.size()>0:             # Veo si hay algun team ya armandose
+				for a in PlayersWaitingmode2.keys():     # Reviso los teams
+					lastkey=a
+					if PlayersWaitingmode2[a].size()==2:
+						pass
+					else :
+						PlayersWaitingmode2[a].append(id)
+						joined=true
+				if joined==false:                        #si no ingreso a ningun team, tengo que crear otro
+					PlayersWaitingmode2[lastkey+1]=[id]
+			else :                                       #no hay ningun team creado, así que lo creo
+				PlayersWaitingmode2[1]=id
+			print(PlayersWaitingmode2)
 	else:
 		Player_Selection[id]=[player_name,player_election]
 		for d in party_player_election:
 			Player_Selection[d]=party_player_election[d]
 		if gamemode == "modo1" :
 			var joined = false
-			for playersmode1 in PlayersWaitingmode1:
-				countmode1=playersmode1
-				if PlayersWaitingmode1.size()+players.size()>3:
-					pass
-				else:
-					for a in players:
-						PlayersWaitingmode1[playersmode1].append(players[a])
-			if joined!=true:
-				PlayersWaitingmode1[countmode1+1]=players.values()
+			if PlayersWaitingmode1.size()>0:
+				for playersmode1 in PlayersWaitingmode1:
+					countmode1=playersmode1
+					if PlayersWaitingmode1[playersmode1].size()+players.size()<=2:
+						for a in players:
+							PlayersWaitingmode1[playersmode1].append(players[a])
+							joined=true
+				if joined!=true:
+					PlayersWaitingmode1[countmode1+1]=players.values()
+			else:
+				PlayersWaitingmode1[1]=players.values()
 		if gamemode == "modo2" :
 			var joined = false
-			for playersmode2 in PlayersWaitingmode2:
-				countmode2=playersmode2
-				if PlayersWaitingmode2.size()+players.size()>2:
-					pass
-				else:
-					for a in players:
-						PlayersWaitingmode2[playersmode2].append(players[a])
-			if joined!=true:
-				PlayersWaitingmode2[countmode2+1]=players.values()
-				
+			if PlayersWaitingmode2.size()>0:
+				for playersmode2 in PlayersWaitingmode2:
+					countmode2=playersmode2
+					if PlayersWaitingmode2[playersmode2].size()+players.size()<=2:
+						for a in players:
+							PlayersWaitingmode2[playersmode2].append(players[a])
+							joined=true
+				if joined!=true:
+					PlayersWaitingmode2[countmode2+1]=players.values()
+			else:
+				PlayersWaitingmode2[1]=players.values()
 					
 		countmode1 = 1
 		countmode2 = 1
@@ -156,6 +181,7 @@ remote func matchmaking(id, gamemode,players,party,player_election,player_name,p
 		var second_key
 		var playersmode2
 		for teamreadymode2 in PlayersWaitingmode2:
+				#Creo los 2 equipos
 				if PlayersWaitingmode2[teamreadymode2].size() == 2:
 					if isready == 0 :
 						firsteam = PlayersWaitingmode2[teamreadymode2]
@@ -166,6 +192,7 @@ remote func matchmaking(id, gamemode,players,party,player_election,player_name,p
 						second_key=teamreadymode2
 						isready+=1
 		if isready == 2:
+			#guardo todo los jugadores en una variable
 			var allplayers=[]
 			for a in firsteam:
 				allplayers.append(a)
@@ -183,10 +210,10 @@ remote func new_Gamelobby(gamemode,players,isteam):
 	var gamelobby_name = "GameLobby"+str(countlobby)
 	print(players) 
 	var gamelobby_config = {}
-	var team_selection={}
+	var team_selection={}  #Contiene a todos los players a los que se va crear la partida
 	if isteam == false:
 		for a in players:
-			team_selection[a]=Player_Selection[a]
+			team_selection[a]=Player_Selection[a] #team_selection = [id] : nombre,eleccion de personaje
 		gamelobby_config = {
 			"name": gamelobby_name,
 			"gamemode": "versus",
@@ -219,7 +246,7 @@ remote func new_Gamelobby(gamemode,players,isteam):
 			instancia.set_name(str(a))
 			instancia.set_network_master(a)
 			Gamelobby_instance.add_child(instancia)
-			rpc_id(a,"_Time_to_play",team_selection)
+			rpc_id(a,"_Time_to_play_alone",team_selection)
 	else:
 		for a in gamelobby_config["first_team"]:
 			var player : PackedScene = load("res://Characters/Survivor/Survivor.tscn")
@@ -233,6 +260,8 @@ remote func new_Gamelobby(gamemode,players,isteam):
 			instancia.set_name(str(a))
 			instancia.set_network_master(a)
 			Gamelobby_instance.add_child(instancia)
+		for a in team_selection:
+			rpc_id(a,"_Time_to_play_team",team_selection,gamelobby_config["first_team"],gamelobby_config["second_team"])
 		
 	return gamelobby_name
 	countlobby+=1

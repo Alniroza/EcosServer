@@ -1,5 +1,6 @@
 extends Node
 
+#const SERVER_IP="25.8.187.236"
 const SERVER_IP = "127.0.0.1"
 const SERVER_PORT = 9000
 const MAX_PLAYERS = 100
@@ -12,10 +13,12 @@ onready var players_database = {
 	1: {"username": "server", "password": "dinosaurio", "etc":0},
 	2: {"username": "a_player", "password": "happy", "etc":0}
 	}
-var prueba = []
+var prueba = [2,3,4]
 var new_player={1:[3,1],2:[4,7]}
 # Informacion de los jugadores conectados al servidor
 var connected_ids = []
+var uno = "hola perro - red"
+var dos = "hola"
 # Nuestra informacion (talvez innecesario)
 
 func _ready():
@@ -32,9 +35,6 @@ func _ready():
 	peer.create_server(SERVER_PORT, MAX_PLAYERS)
 	get_tree().set_network_peer(peer)
 	print("El servidor esta ON en puerto ", SERVER_PORT)
-	for a in new_player.values()[0]:
-		print (a)
-		
 
 
 
