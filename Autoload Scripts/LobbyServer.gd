@@ -114,14 +114,15 @@ master func new_Player(Player, id):
 remote func matchmaking(id, gamemode,players,party,player_election,player_name,party_player_election):
 	if party == false:
 		Player_Selection[id]=[player_name,player_election]
-		if gamemode == "modo1" :
+		if gamemode == "survival" :
 			if PlayersWaitingmode1.size()>0:
 				WaitingMode1=PlayersWaitingmode1[1]
 				WaitingMode1.append(id)
 				PlayersWaitingmode1[1]=WaitingMode1
 			else:
 				PlayersWaitingmode1[1]=[id]
-		if gamemode == "modo2" :
+				
+		if gamemode == "teamdeathmatch" :
 			var joined = false
 			var lastkey
 			if PlayersWaitingmode2.size()>0:             # Veo si hay algun team ya armandose
@@ -141,7 +142,7 @@ remote func matchmaking(id, gamemode,players,party,player_election,player_name,p
 		Player_Selection[id]=[player_name,player_election]
 		for d in party_player_election:
 			Player_Selection[d]=party_player_election[d]
-		if gamemode == "modo1" :
+		if gamemode == "survival" :
 			var joined = false
 			if PlayersWaitingmode1.size()>0:
 				for playersmode1 in PlayersWaitingmode1:
@@ -154,7 +155,7 @@ remote func matchmaking(id, gamemode,players,party,player_election,player_name,p
 					PlayersWaitingmode1[countmode1+1]=players.values()
 			else:
 				PlayersWaitingmode1[1]=players.values()
-		if gamemode == "modo2" :
+		if gamemode == "deathmatch" :
 			var joined = false
 			if PlayersWaitingmode2.size()>0:
 				for playersmode2 in PlayersWaitingmode2:
@@ -170,12 +171,13 @@ remote func matchmaking(id, gamemode,players,party,player_election,player_name,p
 					
 		countmode1 = 1
 		countmode2 = 1
-	if gamemode== "modo1":
+	if gamemode== "survival":
 		for matchmodel1ready in PlayersWaitingmode1:
-			if PlayersWaitingmode1[matchmodel1ready].size() == 2:
+			if PlayersWaitingmode1[matchmodel1ready].size() == 1:
 				new_Gamelobby(gamemode,PlayersWaitingmode1[matchmodel1ready],false)
 				PlayersWaitingmode1.erase(matchmodel1ready)
-	if gamemode == "modo2":
+	
+	if gamemode == "teamdeathmatch":
 		var isready = 0
 		var first_key
 		var second_key
