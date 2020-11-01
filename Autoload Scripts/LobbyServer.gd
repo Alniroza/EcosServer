@@ -35,6 +35,7 @@ var countmode1 = 1
 var WaitingMode2 = []
 var PlayersWaitingmode2 = {1:[]}
 var countmode2 = 1
+var PlayersWaitingmode3 = {1:[]}
 var WaitingMode3 = []
 var countmode3 = 1
 
@@ -138,6 +139,14 @@ remote func matchmaking(id, gamemode,players,party,player_election,player_name,p
 			else :                                       #no hay ningun team creado, así que lo creo
 				PlayersWaitingmode2[1]=id
 			print(PlayersWaitingmode2)
+		if gamemode == "deathmatch" :
+			if PlayersWaitingmode3.size()>0:
+				WaitingMode3=PlayersWaitingmode3[1]
+				WaitingMode3.append(id)
+				PlayersWaitingmode3[1]=WaitingMode3
+			else:
+				PlayersWaitingmode3[1]=[id]
+				
 	else:
 		Player_Selection[id]=[player_name,player_election]
 		for d in party_player_election:
@@ -155,7 +164,7 @@ remote func matchmaking(id, gamemode,players,party,player_election,player_name,p
 					PlayersWaitingmode1[countmode1+1]=players.values()
 			else:
 				PlayersWaitingmode1[1]=players.values()
-		if gamemode == "deathmatch" :
+		if gamemode == "teamdeathmatch" :
 			var joined = false
 			if PlayersWaitingmode2.size()>0:
 				for playersmode2 in PlayersWaitingmode2:
@@ -168,9 +177,22 @@ remote func matchmaking(id, gamemode,players,party,player_election,player_name,p
 					PlayersWaitingmode2[countmode2+1]=players.values()
 			else:
 				PlayersWaitingmode2[1]=players.values()
-					
+		if gamemode == "deathmatch" :
+			var joined = false
+			if PlayersWaitingmode3.size()>0:
+				for playersmode3 in PlayersWaitingmode3:
+					countmode3=playersmode3
+					if PlayersWaitingmode3[playersmode3].size()+players.size()<=2:
+						for a in players:
+							PlayersWaitingmode3[playersmode3].append(players[a])
+							joined=true
+				if joined!=true:
+					PlayersWaitingmode3[countmode3+1]=players.values()
+			else:
+				PlayersWaitingmode3[1]=players.values()
 		countmode1 = 1
 		countmode2 = 1
+		countmode3 = 1
 	if gamemode== "survival":
 		for matchmodel1ready in PlayersWaitingmode1:
 			if PlayersWaitingmode1[matchmodel1ready].size() == 1:
@@ -203,6 +225,11 @@ remote func matchmaking(id, gamemode,players,party,player_election,player_name,p
 			new_Gamelobby(gamemode,allplayers,true)
 			PlayersWaitingmode2.erase(first_key)
 			PlayersWaitingmode2.erase(second_key)
+	if gamemode== "deathmatch":
+		for matchmodel3ready in PlayersWaitingmode3:
+			if PlayersWaitingmode3[matchmodel3ready].size() == 1:
+				new_Gamelobby(gamemode,PlayersWaitingmode3[matchmodel3ready],false)
+				PlayersWaitingmode3.erase(matchmodel3ready)
 
 #Les creamos partidas de juego a los jugadores. 
 remote func new_Gamelobby(gamemode,players,isteam):
@@ -218,7 +245,7 @@ remote func new_Gamelobby(gamemode,players,isteam):
 			team_selection[a]=Player_Selection[a] #team_selection = [id] : nombre,eleccion de personaje
 		gamelobby_config = {
 			"name": gamelobby_name,
-			"gamemode": "versus",
+			"gamemode": gamemode,
 			"connected_players": players,
 			"elo": 0
 			}
@@ -227,7 +254,7 @@ remote func new_Gamelobby(gamemode,players,isteam):
 			team_selection[a]=Player_Selection[a]
 		gamelobby_config = {
 			"name": gamelobby_name,
-			"gamemode": "versus",
+			"gamemode": gamemode,
 			"first_team" : firsteam,
 			"second_team" : secondteam,
 			"elo": 0
@@ -242,13 +269,23 @@ remote func new_Gamelobby(gamemode,players,isteam):
 	Gamelobby_instance.config = gamelobby_config
 	$Gamelobbies.add_child(Gamelobby_instance)
 	if isteam == false:
-		for a in gamelobby_config["connected_players"]:
-			var player : PackedScene = load("res://Characters/Survivor/Survivor.tscn")
-			var instancia = player.instance()
-			instancia.set_name(str(a))
-			instancia.set_network_master(a)
-			Gamelobby_instance.add_child(instancia)
-			rpc_id(a,"_Time_to_play_alone",team_selection)
+		if gamemode=="survival":
+			for a in gamelobby_config["connected_players"]:
+				var player : PackedScene = load("res://Characters/Survivor/Survivor.tscn")
+				var instancia = player.instance()
+				instancia.set_name(str(a))
+				instancia.set_network_master(a)
+				Gamelobby_instance.add_child(instancia)
+				rpc_id(a,"_Time_to_play_alone",team_selection)
+		if gamemode=="deathmatch":
+			for a in gamelobby_config["connected_players"]:
+				var player : PackedScene = load("res://Characters/Survivor/Survivor.tscn")
+				var instancia = player.instance()
+				instancia.set_name(str(a))
+				instancia.set_network_master(a)
+				Gamelobby_instance.add_child(instancia)
+				rpc_id(a,"_Time_to_play_alone",team_selection)
+			
 	else:
 		for a in gamelobby_config["first_team"]:
 			var player : PackedScene = load("res://Characters/Survivor/Survivor.tscn")
