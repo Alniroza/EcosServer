@@ -35,6 +35,10 @@ func _ready():
 	peer.create_server(SERVER_PORT, MAX_PLAYERS)
 	get_tree().set_network_peer(peer)
 	print("El servidor esta ON en puerto ", SERVER_PORT)
+	var rng = RandomNumberGenerator.new()
+	rng.randomize()
+	print(rng.randi_range(-20 ,10))
+	print("a"+"b")
 
 
 

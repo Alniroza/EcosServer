@@ -227,7 +227,7 @@ remote func matchmaking(id, gamemode,players,party,player_election,player_name,p
 			PlayersWaitingmode2.erase(second_key)
 	if gamemode== "deathmatch":
 		for matchmodel3ready in PlayersWaitingmode3:
-			if PlayersWaitingmode3[matchmodel3ready].size() == 1:
+			if PlayersWaitingmode3[matchmodel3ready].size() == 2:
 				new_Gamelobby(gamemode,PlayersWaitingmode3[matchmodel3ready],false)
 				PlayersWaitingmode3.erase(matchmodel3ready)
 
@@ -276,7 +276,7 @@ remote func new_Gamelobby(gamemode,players,isteam):
 				instancia.set_name(str(a))
 				instancia.set_network_master(a)
 				Gamelobby_instance.add_child(instancia)
-				rpc_id(a,"_Time_to_play_alone",team_selection)
+				rpc_id(a,"_Time_to_play_alone",team_selection,gamemode)
 		if gamemode=="deathmatch":
 			for a in gamelobby_config["connected_players"]:
 				var player : PackedScene = load("res://Characters/Survivor/Survivor.tscn")
@@ -284,7 +284,7 @@ remote func new_Gamelobby(gamemode,players,isteam):
 				instancia.set_name(str(a))
 				instancia.set_network_master(a)
 				Gamelobby_instance.add_child(instancia)
-				rpc_id(a,"_Time_to_play_alone",team_selection)
+				rpc_id(a,"_Time_to_play_alone",team_selection,gamemode)
 			
 	else:
 		for a in gamelobby_config["first_team"]:
@@ -300,7 +300,7 @@ remote func new_Gamelobby(gamemode,players,isteam):
 			instancia.set_network_master(a)
 			Gamelobby_instance.add_child(instancia)
 		for a in team_selection:
-			rpc_id(a,"_Time_to_play_team",team_selection,gamelobby_config["first_team"],gamelobby_config["second_team"])
+			rpc_id(a,"_Time_to_play_team",team_selection,gamelobby_config["first_team"],gamelobby_config["second_team"],gamemode)
 		
 	return gamelobby_name
 	countlobby+=1
