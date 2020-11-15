@@ -3,13 +3,18 @@ extends Node2D
 onready var SurvivorServer = preload("res://Characters/SurvivorServer/SurvivorServer.tscn")
 
 var config
-
+var Players
 func _ready():
 	pass
 
 
 
 
+
+
+
+func set_players(players):
+	Players=players
 #
 #remote func request_character(charname, player_id):
 #	print("Se solicita el personaje ", charname)

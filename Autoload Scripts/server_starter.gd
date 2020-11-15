@@ -35,11 +35,6 @@ func _ready():
 	peer.create_server(SERVER_PORT, MAX_PLAYERS)
 	get_tree().set_network_peer(peer)
 	print("El servidor esta ON en puerto ", SERVER_PORT)
-	var rng = RandomNumberGenerator.new()
-	rng.randomize()
-	print(rng.randi_range(-20 ,10))
-	print("a"+"b")
-
 
 
 func _player_connected(id):
@@ -52,9 +47,7 @@ func _player_connected(id):
 	pass
 	
 func _player_disconnected(id):
-#	print(id , " se ha desconectado")
-#	player_info.erase(id) # Erase player from info.
-#	find_node(str(id), true, false ).queue_free()
+	get_tree().get_root().get_node("root").get_node("Lobby").Remove_peer(id)
 	pass
 
 func _connected_ok():
