@@ -252,11 +252,9 @@ remote func matchmaking(id, gamemode,players,party,player_election,player_name,p
 				allplayers.append(a)
 			for b in secondteam:
 				allplayers.append(b)
-			print("teamdeathmatch ready : ", allplayers)
 			new_Gamelobby(gamemode,allplayers,true)
 			PlayersWaitingmode2.erase(first_key)
 			PlayersWaitingmode2.erase(second_key)
-			print("Quedan en teamdeathmatch : " , PlayersWaitingmode2)
 	if gamemode== "deathmatch":
 		for matchmodel3ready in PlayersWaitingmode3:
 			if PlayersWaitingmode3[matchmodel3ready].size() == 3:

@@ -4,6 +4,7 @@ onready var SurvivorServer = preload("res://Characters/SurvivorServer/SurvivorSe
 
 var config
 var Players
+var id_creator
 func _ready():
 	pass
 
@@ -15,7 +16,9 @@ func _ready():
 
 func set_players(players):
 	Players=players
-#
+
+func set_id_creator(peer_id):
+	id_creator = peer_id
 #remote func request_character(charname, player_id):
 #	print("Se solicita el personaje ", charname)
 #	match_players.append(player_id)

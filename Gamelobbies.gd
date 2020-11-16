@@ -13,6 +13,11 @@ func _ready():
 func remove_peer(the_id,id_to_remove,lobby_name):
 	rpc_id(the_id,"kick_someone",id_to_remove,lobby_name)
 	
+remote func delete_gamelobby(gamelobby):
+	if self.has_node(gamelobby):
+		get_node(gamelobby).queue_free()
+		print("Borré el game lobby : ", gamelobby)
+	
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 #func _process(delta):
