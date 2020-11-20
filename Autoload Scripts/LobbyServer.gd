@@ -227,7 +227,7 @@ remote func matchmaking(id, gamemode,players,party,player_election,player_name,p
 		countmode3 = 1
 	if gamemode== "survival":
 		for matchmodel1ready in PlayersWaitingmode1:
-			if PlayersWaitingmode1[matchmodel1ready].size() == 4:
+			if PlayersWaitingmode1[matchmodel1ready].size() == 1:
 				new_Gamelobby(gamemode,PlayersWaitingmode1[matchmodel1ready],false)
 				PlayersWaitingmode1.erase(matchmodel1ready)
 	
