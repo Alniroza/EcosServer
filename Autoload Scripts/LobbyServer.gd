@@ -349,7 +349,7 @@ remote func matchmaking(id, gamemode,players,party,player_election,player_name,p
 			PlayersWaitingmode2.erase(second_key)
 	if gamemode== "deathmatch":
 		for matchmodel3ready in PlayersWaitingmode3:
-			if PlayersWaitingmode3[matchmodel3ready].size() == 3:
+			if PlayersWaitingmode3[matchmodel3ready].size() == 2:
 				new_Gamelobby(gamemode,PlayersWaitingmode3[matchmodel3ready],false)
 				PlayersWaitingmode3.erase(matchmodel3ready)
 
@@ -405,7 +405,7 @@ remote func new_Gamelobby(gamemode,players,isteam):
 				instancia.set_name(str(a))
 				instancia.set_network_master(a)
 				Gamelobby_instance.add_child(instancia)
-				rpc_id(a,"_Time_to_play_deathmatch",team_selection,gamemode,lobby_number, 15)
+				rpc_id(a,"_Time_to_play_deathmatch",team_selection,gamemode,lobby_number, 24)
 			
 	else:
 		Gamelobby_instance.set_players(team_selection.keys())
@@ -422,7 +422,7 @@ remote func new_Gamelobby(gamemode,players,isteam):
 			instancia.set_network_master(a)
 			Gamelobby_instance.add_child(instancia)
 		for a in team_selection:
-			rpc_id(a,"_Time_to_play_teamdeathmatch",team_selection,gamelobby_config["first_team"],gamelobby_config["second_team"],gamemode,lobby_number)
+			rpc_id(a,"_Time_to_play_teamdeathmatch",team_selection,gamelobby_config["first_team"],gamelobby_config["second_team"],gamemode,lobby_number,43)
 	countlobby+=1
 	return gamelobby_name
 	
