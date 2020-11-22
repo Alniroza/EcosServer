@@ -2,6 +2,7 @@ extends Node2D
 
 onready var Gamelobby = preload("res://ServerScenes/GameLobbyServer.tscn")
 onready var PlayerServer = preload("res://Characters/PlayerServer.tscn")
+onready var Team = preload ("res://ServerScenes/Team.tscn")
 
 #¿Que mas deberia tener los players?
 onready var PlayersDatabase = [
@@ -23,11 +24,17 @@ onready var PlayersDatabase = [
 var new_registered_player={}
 var Players_connected={}
 var Player_Selection={}  #[id] : nombre,eleccion de personaje
+var Players_name = {} # id : nombre
 
+var party_number = 1
+var party_order = []
+var party_information = {}
+var created_parties = {}
 var isparty
 var auxcountlobby=1
 var countlobby = 1
 var lobby_number = 0
+var players_in_party = []
 
 #Variable que guardará a los players esperando por encontrar partida
 var firsteam
@@ -76,18 +83,107 @@ func Remove_peer(peer_id):
 			PlayersWaitingmode3[a].erase(peer_id)
 			someone_kicked = true
 	var string_gamelobbies = "GameLobby"
-	if someone_kicked != true : 
-		print(get_node("Gamelobbies").get_children())
+	if someone_kicked != true : # Eliminar lobby
 		for a in range(get_node("Gamelobbies").get_child_count()):
-			#var Gamelobby = get_node("Gamelobbies").get_node(string_gamelobbies+str(a+1))
 			var Gamelobby = get_node("Gamelobbies").get_child(a)
-			print(Gamelobby.get_name())
 			if (Gamelobby.Players).has(peer_id):
 				for b in Gamelobby.Players:
 					if peer_id != b:
 						$Gamelobbies.remove_peer(b,peer_id,Gamelobby.get_name())
-				
+	if players_in_party.has(peer_id):
+		players_in_party.erase(Players_name[peer_id])
+		for team in get_node("Team").get_children():
+			if team.players.has(Players_name[peer_id]):
+				team.delete(Players_name[peer_id],peer_id)
+				for players in team.players:
+					rpc_id(Players_connected[players],"someone_leave_party",team.players, team.party_elections, team.party_information,Players_name[peer_id])
+				print(team.players.size())
+				if team.players.size() == 1 :
+					print("Team eliminado : ", team.get_name())
+					team.queue_free()
+	print(Players_connected)
+	print("Eliminé al peer : "+ Players_name[peer_id])
+	Players_connected.erase(Players_name[peer_id])
+	Players_name.erase(peer_id)
+	
+remote func invite_player_party(name_player_invited,id_sender,name_sender, sender_election,gamemode):
+	var invite = true
+	if Players_connected.has(name_player_invited) == false:
+		rpc_id(int(id_sender),"player_not_connected")
+	else :
+		if players_in_party.has(Players_connected[name_player_invited]):
+			rpc_id(id_sender,"player_is_in_party",name_player_invited)
+		else:
+			rpc_id(int(Players_connected[name_player_invited]),"_Receive_invitation",name_sender,id_sender, sender_election,gamemode)
+	pass
+
+remote func party_answer(answer, name_invited_player, invited_election , name_sender, id_sender, sender_election):	
+	var hehasgroup = false
+	var number
+	if answer == true:
+		var string_team = "Team"
+		if get_node(string_team).get_child_count() != 0:
+			for teams in get_node(string_team).get_children():
+				if (teams.players).has(name_sender):
+					(teams.players).append(name_invited_player)
+					(teams.party_information)[Players_connected[name_invited_player]] = [name_invited_player, invited_election]
+					(teams.party_elections)[name_invited_player] = invited_election
+					hehasgroup = true
+					if players_in_party.has(Players_connected[name_invited_player]) != true :
+						players_in_party.append(Players_connected[name_invited_player])
+					for a in teams.players:
+						print("Envio " , teams.players, teams.party_information, teams.party_elections)
+						rpc_id(int(Players_connected[a]),"party_change", teams.players, teams.party_information, teams.party_elections,teams.party_number)
+					break
+		if hehasgroup == false :
+			if players_in_party.has(id_sender) != true:
+				players_in_party.append(id_sender)
+			if players_in_party.has(Players_connected[name_invited_player]) != true:
+				players_in_party.append(Players_connected[name_invited_player])
+			var team = Team.instance()
+			print("Team creado : "+ string_team + str(party_number))
+			team.set_name(string_team+str(party_number))
+			team.set_leader(name_sender)
+			team.set_party_information(name_sender,id_sender,sender_election)
+			team.set_party_information(name_invited_player,Players_connected[name_invited_player],invited_election)
+			team.set_roles_by_name(name_sender, sender_election)
+			team.set_roles_by_name(name_invited_player, invited_election)
+			team.set_party_number(party_number)
+			team.players.append(name_sender)
+			team.players.append(name_invited_player)
+			$Team.add_child(team)
+			rpc_id(int(Players_connected[name_sender]),"party_change", team.players, team.party_information, team.party_elections, party_number)
+			rpc_id(int(Players_connected[name_invited_player]),"party_change", team.players, team.party_information, team.party_elections, party_number)
+			party_number += 1
+			
+	else : 
+		rpc_id(int(id_sender),"no_party_change")
+		pass
 		
+remote func change_character(name_player,id_player, character_election):
+	for teams in get_node("Team").get_children():
+		if teams.players.has(name_player):
+			teams.party_elections[name_player] = character_election
+			teams.party_information[id_player] = [teams.party_information[id_player][0], character_election]
+			for a in teams.players:
+				rpc_id(int(a), "change_character", name_player, character_election, teams.party_information)
+			break
+remote func leave_party(name_player,id_player, the_party_number):
+	print("El numero de la party es : ", the_party_number)
+	var the_team = get_node("Team/Team"+str(the_party_number))
+	the_team.delete(name_player,id_player)
+	players_in_party.erase(id_player)
+	for players in the_team.players:
+		rpc_id(Players_connected[players],"someone_leave_party",the_team.players, the_team.party_elections, the_team.party_information, name_player)
+		if the_team.players.size() == 1 :
+			print("Team eliminado : ", the_team.get_name())
+			players_in_party.erase(Players_connected[the_team.players[0]])
+			the_team.queue_free()
+	pass
+remote func change_gamemode(the_gamemode, the_party_number):
+	var team = get_node("Team/Team"+str(the_party_number))
+	for players in team.players:
+		rpc_id(Players_connected[players],"change_gamemode",the_gamemode)
 
 remote func registry_user(usern,passw,idpeer):
 	var exist=false
@@ -101,17 +197,12 @@ remote func registry_user(usern,passw,idpeer):
 		PlayersDatabase.append(new_registered_player)
 		new_registered_player={}
 		rpc_id(idpeer,"_accept_registry")
-		
+remote func ready_to_play(peer_name, peer_id, team_number):
+	var team = get_node("Team/Team"+str(team_number))
+	for players in team.players:
+		rpc_id(Players_connected[players],"someone_is_ready", peer_name, peer_id, team.players)
+	
 
-
-#Identificar id de los usuarios
-
-remote func search_id_friend(friendname,idpeer):
-	print(Players_connected)
-	for cont in Players_connected.keys():
-		if cont == friendname:
-			print("entré aca y entregaré : ", Players_connected[friendname])
-			rpc_id(idpeer,"_receive_id_friend",Players_connected[friendname])
 
 #Autenticar una cuenta:
 remote func authenticate(username, password):
@@ -123,6 +214,7 @@ remote func authenticate(username, password):
 		if [Player.username, Player.password] == [username, password]:
 			#Validar conexion, traer jugador al lobby.
 			Players_connected[username]=player_id
+			Players_name[player_id] = str(username)
 			return rpc_id(player_id,"new_player", Player, player_id)
 			
 	return 0
@@ -227,7 +319,7 @@ remote func matchmaking(id, gamemode,players,party,player_election,player_name,p
 		countmode3 = 1
 	if gamemode== "survival":
 		for matchmodel1ready in PlayersWaitingmode1:
-			if PlayersWaitingmode1[matchmodel1ready].size() == 1:
+			if PlayersWaitingmode1[matchmodel1ready].size() == 2:
 				new_Gamelobby(gamemode,PlayersWaitingmode1[matchmodel1ready],false)
 				PlayersWaitingmode1.erase(matchmodel1ready)
 	
@@ -304,7 +396,7 @@ remote func new_Gamelobby(gamemode,players,isteam):
 				instancia.set_name(str(a))
 				instancia.set_network_master(a)
 				Gamelobby_instance.add_child(instancia)
-				rpc_id(a,"_Time_to_play_alone",team_selection,gamemode,lobby_number)
+				rpc_id(a,"_Time_to_play_survival",team_selection,gamemode,lobby_number)
 		if gamemode=="deathmatch":
 			Gamelobby_instance.set_players(team_selection.keys())
 			for a in gamelobby_config["connected_players"]:
@@ -313,7 +405,7 @@ remote func new_Gamelobby(gamemode,players,isteam):
 				instancia.set_name(str(a))
 				instancia.set_network_master(a)
 				Gamelobby_instance.add_child(instancia)
-				rpc_id(a,"_Time_to_play_alone",team_selection,gamemode,lobby_number)
+				rpc_id(a,"_Time_to_play_deathmatch",team_selection,gamemode,lobby_number, 15)
 			
 	else:
 		Gamelobby_instance.set_players(team_selection.keys())
@@ -330,7 +422,7 @@ remote func new_Gamelobby(gamemode,players,isteam):
 			instancia.set_network_master(a)
 			Gamelobby_instance.add_child(instancia)
 		for a in team_selection:
-			rpc_id(a,"_Time_to_play_team",team_selection,gamelobby_config["first_team"],gamelobby_config["second_team"],gamemode,lobby_number)
+			rpc_id(a,"_Time_to_play_teamdeathmatch",team_selection,gamelobby_config["first_team"],gamelobby_config["second_team"],gamemode,lobby_number)
 	countlobby+=1
 	return gamelobby_name
 	
