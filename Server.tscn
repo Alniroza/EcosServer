@@ -1,8 +1,9 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://ServerScenes/LobbyServer.tscn" type="PackedScene" id=1]
 [ext_resource path="res://Gamelobbies.gd" type="Script" id=2]
 [ext_resource path="res://Team.gd" type="Script" id=3]
+[ext_resource path="res://ServerScenes/Player.tscn" type="PackedScene" id=4]
 
 [node name="root" type="Node"]
 
@@ -15,3 +16,5 @@ script = ExtResource( 2 )
 
 [node name="Team" type="Node2D" parent="Lobby"]
 script = ExtResource( 3 )
+
+[node name="Player" parent="Lobby" instance=ExtResource( 4 )]
