@@ -110,10 +110,9 @@ func Remove_peer(peer_id):
 				if team.players.size() == 1 :
 					print("Team eliminado : ", team.get_name())
 					team.queue_free()
-	print(Players_connected)
-	print("Eliminé al peer : "+ Players_name[peer_id])
-	Players_connected.erase(Players_name[peer_id])
-	Players_name.erase(peer_id)
+	if Players_name.has(peer_id):
+		Players_connected.erase(Players_name[peer_id])
+		Players_name.erase(peer_id)
 	
 remote func invite_player_party(name_player_invited,id_sender,name_sender, sender_election,gamemode):
 	var invite = true
