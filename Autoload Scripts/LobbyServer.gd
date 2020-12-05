@@ -473,7 +473,6 @@ remote func new_Gamelobby(gamemode,players,isteam):
 				instancia.set_name(str(a))
 				instancia.set_network_master(a)
 				Gamelobby_instance.add_child(instancia)
-				rpc_id(a,"_Time_to_play_deathmatch",team_selection,gamemode,lobby_number, 60)
 				rpc_id(a,"_Time_to_play_deathmatch",team_selection,gamemode,lobby_number, 24)
 			
 	else:
@@ -492,7 +491,6 @@ remote func new_Gamelobby(gamemode,players,isteam):
 			Gamelobby_instance.add_child(instancia)
 		for a in team_selection:
 			rpc_id(a,"_Time_to_play_teamdeathmatch",team_selection,gamelobby_config["first_team"],gamelobby_config["second_team"],gamemode,lobby_number,20)
-			rpc_id(a,"_Time_to_play_teamdeathmatch",team_selection,gamelobby_config["first_team"],gamelobby_config["second_team"],gamemode,lobby_number,43)
 	countlobby+=1
 	return gamelobby_name
 	

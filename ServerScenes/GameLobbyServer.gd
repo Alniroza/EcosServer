@@ -5,6 +5,7 @@ onready var SurvivorServer = preload("res://Characters/SurvivorServer/SurvivorSe
 var config
 var Players
 var id_creator
+var score_received = false
 func _ready():
 	pass
 
