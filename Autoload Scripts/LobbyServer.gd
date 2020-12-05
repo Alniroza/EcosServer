@@ -3,6 +3,7 @@ extends Node2D
 onready var Gamelobby = preload("res://ServerScenes/GameLobbyServer.tscn")
 onready var PlayerServer = preload("res://Characters/PlayerServer.tscn")
 onready var Team = preload ("res://ServerScenes/Team.tscn")
+onready var Player_scene = preload ("res://ServerScenes/Player.tscn")
 
 #¿Que mas deberia tener los players?
 onready var PlayersDatabase = [
@@ -35,6 +36,7 @@ var auxcountlobby=1
 var countlobby = 1
 var lobby_number = 0
 var players_in_party = []
+var leaderboard_scores = {}
 
 #Variable que guardará a los players esperando por encontrar partida
 var firsteam
@@ -67,6 +69,13 @@ var countmode3 = 1
 #Como conectar a partidas, comunicarse con amigos, buscar partida, etc.
 
 #Registrar usuarios
+
+class MyCustomSorter:
+	static func sort_ascending(a, b):
+		if a[0] > b[0]:
+			return true
+		return false
+
 
 func Remove_peer(peer_id):
 	var someone_kicked = false
@@ -184,6 +193,56 @@ remote func change_gamemode(the_gamemode, the_party_number):
 	var team = get_node("Team/Team"+str(the_party_number))
 	for players in team.players:
 		rpc_id(Players_connected[players],"change_gamemode",the_gamemode)
+func update_leaderboard(name_gamemode, places):
+	if name_gamemode == "survival":
+		for a in places :
+			if leaderboard_scores.has(a) == true:
+				leaderboard_scores[str(a)] = leaderboard_scores[str(a)] + places.size()*10 - places.find(a)*10
+			else:
+				leaderboard_scores[str(a)] = places.size()*10 - places.find(a)*10
+	if name_gamemode == "deathmatch":
+		for a in places :
+			if leaderboard_scores.has(a) == true:
+				if int(places[a][0])*6 > int(places[a][1])*2 : 
+					leaderboard_scores[str(a)] = leaderboard_scores[str(a)] + int(places[a][0])*6 - int(places[a][1])*2
+			else:
+				if int(places[a][0])*6 > int(places[a][1])*2 : 
+					leaderboard_scores[str(a)] = int(places[a][0])*6 - int(places[a][1])*2
+				else:
+					leaderboard_scores[str(a)] = 0
+	if name_gamemode == "teamdeathmatch":
+		if places.has("tie"):
+			for a in places["tie"]:
+				if leaderboard_scores.has(str(a)) == true:
+					leaderboard_scores[str(a)] = leaderboard_scores[str(a)] + 50
+				else:
+					leaderboard_scores[str(a)] = 40
+		else:
+			for a in places["winner_team"]:
+				if leaderboard_scores.has(str(a)) == true:
+					leaderboard_scores[str(a)] = leaderboard_scores[str(a)] + 60
+				else:
+					leaderboard_scores[str(a)] = 60
+			for a in places["loser_team"]:
+				if leaderboard_scores.has(str(a)) == true:
+					leaderboard_scores[str(a)] = leaderboard_scores[str(a)] + 20
+				else:
+					leaderboard_scores[str(a)] = 20
+				
+			
+remote func give_leaderboard(id_request):
+	var request_scores = []
+	var leaderboard_aux = []
+	for a in leaderboard_scores:
+		print("give_leaderboard : ", leaderboard_scores[a])
+		print("give_leaderboard : ", a)
+		leaderboard_aux.append([leaderboard_scores[a],a])
+	leaderboard_aux.sort_custom(MyCustomSorter, "sort_ascending")
+	print("give_leaderboard : " , leaderboard_aux)
+	request_scores = [leaderboard_scores[Players_name[id_request]],Players_name[id_request]]
+	rpc_id(id_request,"leaderboard_results", leaderboard_aux, request_scores)
+	
+
 
 remote func registry_user(usern,passw,idpeer):
 	var exist=false
@@ -215,6 +274,16 @@ remote func authenticate(username, password):
 			#Validar conexion, traer jugador al lobby.
 			Players_connected[username]=player_id
 			Players_name[player_id] = str(username)
+			if leaderboard_scores.has(username) != true:
+				leaderboard_scores[username] = 0
+			if get_node("Players").has_node(str(username)) != true:
+				var instanced_player = Player_scene.instance()
+				instanced_player.set_name_player(username)  #
+				instanced_player.set_id_player(player_id)	#
+				instanced_player.set_lvl_player(1)          #
+				get_node("Players").add_child(instanced_player) #
+			else : #
+				get_node(str(username)).set_id_player(player_id)#
 			return rpc_id(player_id,"new_player", Player, player_id)
 			
 	return 0
@@ -405,6 +474,7 @@ remote func new_Gamelobby(gamemode,players,isteam):
 				instancia.set_name(str(a))
 				instancia.set_network_master(a)
 				Gamelobby_instance.add_child(instancia)
+				rpc_id(a,"_Time_to_play_deathmatch",team_selection,gamemode,lobby_number, 60)
 				rpc_id(a,"_Time_to_play_deathmatch",team_selection,gamemode,lobby_number, 24)
 			
 	else:
@@ -422,6 +492,7 @@ remote func new_Gamelobby(gamemode,players,isteam):
 			instancia.set_network_master(a)
 			Gamelobby_instance.add_child(instancia)
 		for a in team_selection:
+			rpc_id(a,"_Time_to_play_teamdeathmatch",team_selection,gamelobby_config["first_team"],gamelobby_config["second_team"],gamemode,lobby_number,20)
 			rpc_id(a,"_Time_to_play_teamdeathmatch",team_selection,gamelobby_config["first_team"],gamelobby_config["second_team"],gamemode,lobby_number,43)
 	countlobby+=1
 	return gamelobby_name
