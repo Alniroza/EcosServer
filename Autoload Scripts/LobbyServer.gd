@@ -503,3 +503,27 @@ remote func new_Gamelobby(gamemode,players,isteam):
 func join_gamelobby(Player, GameLobby):
 	GameLobby.add_child(Player)
 	pass
+
+#FUnción para el chat dentro de la partida
+#remote func Server_chat(Players, nickname, message, group):
+#	print('Server_chat :', Players, nickname, message, group)
+#	for player in Players:
+#		print('Server_chat -> Player: ', player)
+#		rpc_id(player,"receive_server_chat", Players, nickname, message, group)
+
+#Función para el chat dentro del lobby
+remote func Server_chat(nickname, message, group):
+	print('Server_chat :',nickname, message, group)
+	for player in Players_name:
+		print('Server_chat -> Player: ', player)
+		rpc_id(player,"receive_server_chat", nickname, message, group)
+
+remote func Server_chat_Team(Users, nickname, message, group):
+	print('Server_chat :',nickname, message, group)
+	var sender = get_tree().get_rpc_sender_id()
+	if Users.size() != 0:
+		for player in Users:
+			print('Server_chat -> Player: ', player)
+			rpc_id(player,"receive_server_chat", nickname, message, group)
+	else:
+		rpc_id(sender,"receive_server_chat", nickname, message, group)
