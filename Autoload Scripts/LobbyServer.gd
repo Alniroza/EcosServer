@@ -111,6 +111,7 @@ func Remove_peer(peer_id):
 					print("Team eliminado : ", team.get_name())
 					team.queue_free()
 	if Players_name.has(peer_id):
+		print("eliminé a ",Players_connected[Players_name[peer_id]])
 		Players_connected.erase(Players_name[peer_id])
 		Players_name.erase(peer_id)
 	
@@ -144,6 +145,7 @@ remote func party_answer(answer, name_invited_player, invited_election , name_se
 						rpc_id(int(Players_connected[a]),"party_change", teams.players, teams.party_information, teams.party_elections,teams.party_number)
 					break
 		if hehasgroup == false :
+			print("hola desde platy inviation")
 			if players_in_party.has(id_sender) != true:
 				players_in_party.append(id_sender)
 			if players_in_party.has(Players_connected[name_invited_player]) != true:
@@ -176,6 +178,15 @@ remote func change_character(name_player,id_player, character_election):
 			for a in teams.players:
 				rpc_id(int(a), "change_character", name_player, character_election, teams.party_information)
 			break
+remote func change_outfit(name_player, id_player, character_election):
+	for teams in get_node("Team").get_children():
+		if teams.players.has(name_player):
+			teams.party_elections[name_player] = character_election
+			teams.party_information[id_player] = [teams.party_information[id_player][0], character_election]
+			for a in teams.players:
+				rpc_id(int(a), "change_character", name_player, character_election, teams.party_information)
+			break
+
 remote func leave_party(name_player,id_player, the_party_number):
 	print("El numero de la party es : ", the_party_number)
 	var the_team = get_node("Team/Team"+str(the_party_number))
@@ -233,11 +244,8 @@ remote func give_leaderboard(id_request):
 	var request_scores = []
 	var leaderboard_aux = []
 	for a in leaderboard_scores:
-		print("give_leaderboard : ", leaderboard_scores[a])
-		print("give_leaderboard : ", a)
 		leaderboard_aux.append([leaderboard_scores[a],a])
 	leaderboard_aux.sort_custom(MyCustomSorter, "sort_ascending")
-	print("give_leaderboard : " , leaderboard_aux)
 	request_scores = [leaderboard_scores[Players_name[id_request]],Players_name[id_request]]
 	rpc_id(id_request,"leaderboard_results", leaderboard_aux, request_scores)
 	
@@ -328,7 +336,6 @@ remote func matchmaking(id, gamemode,players,party,player_election,player_name,p
 					PlayersWaitingmode2[lastkey+1]=[id]
 			else :                                       #no hay ningun team creado, así que lo creo
 				PlayersWaitingmode2[1]=[id]
-			print("Teamdeathmatch : ", PlayersWaitingmode2)
 		if gamemode == "deathmatch" :
 			if PlayersWaitingmode3.size()>0:
 				WaitingMode3=PlayersWaitingmode3[1]
@@ -336,9 +343,7 @@ remote func matchmaking(id, gamemode,players,party,player_election,player_name,p
 				PlayersWaitingmode3[1]=WaitingMode3
 			else:
 				PlayersWaitingmode3[1]=[id]
-			print("Deathmatch : ", PlayersWaitingmode3)
 			
-				
 	else:
 		Player_Selection[id]=[player_name,player_election]
 		for d in party_player_election:
