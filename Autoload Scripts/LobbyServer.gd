@@ -9,16 +9,12 @@ onready var Player_scene = preload ("res://ServerScenes/Player.tscn")
 onready var PlayersDatabase = [
 	{"username" : "goduser", "password" : "goduser"},
 	{"username" : "god", "password" : "god"},
-	{"username" : "a", "password" : "a"},
-	{"username" : "b", "password" : "b"},
 	{"username" : "gabriel", "password" : "gabriel"},
 	{"username" : "alonso", "password" : "alonso"},
 	{"username" : "alex", "password" : "alex"},
 	{"username" : "franco", "password" : "franco"},
 	{"username" : "Goku", "password" : "Goku"},
-	{"username" : "Piñera", "password" : "Piñera"},
-	{"username" : "c", "password" : "c"},
-	{"username" : "d", "password" : "d"}
+	{"username" : "Piñera", "password" : "Piñera"}
 	]
 	
 
@@ -108,9 +104,11 @@ func Remove_peer(peer_id):
 					rpc_id(Players_connected[players],"someone_leave_party",team.players, team.party_elections, team.party_information,Players_name[peer_id])
 				print(team.players.size())
 				if team.players.size() == 1 :
+					players_in_party.erase(Players_connected[team.players[0]])
 					print("Team eliminado : ", team.get_name())
 					team.queue_free()
-	if Players_name.has(peer_id):
+	print(Players_connected)
+	if Players_name.has(peer_id) and Players_connected.has(Players_name[peer_id]):
 		print("eliminé a ",Players_connected[Players_name[peer_id]])
 		Players_connected.erase(Players_name[peer_id])
 		Players_name.erase(peer_id)
@@ -478,7 +476,7 @@ remote func new_Gamelobby(gamemode,players,isteam):
 				instancia.set_name(str(a))
 				instancia.set_network_master(a)
 				Gamelobby_instance.add_child(instancia)
-				rpc_id(a,"_Time_to_play_deathmatch",team_selection,gamemode,lobby_number, 24)
+				rpc_id(a,"_Time_to_play_deathmatch",team_selection,gamemode,lobby_number, 120)
 			
 	else:
 		Gamelobby_instance.set_players(team_selection.keys())
@@ -495,7 +493,7 @@ remote func new_Gamelobby(gamemode,players,isteam):
 			instancia.set_network_master(a)
 			Gamelobby_instance.add_child(instancia)
 		for a in team_selection:
-			rpc_id(a,"_Time_to_play_teamdeathmatch",team_selection,gamelobby_config["first_team"],gamelobby_config["second_team"],gamemode,lobby_number,20)
+			rpc_id(a,"_Time_to_play_teamdeathmatch",team_selection,gamelobby_config["first_team"],gamelobby_config["second_team"],gamemode,lobby_number,120)
 	countlobby+=1
 	return gamelobby_name
 	
