@@ -351,7 +351,7 @@ remote func matchmaking(id, gamemode,players,party,player_election,player_name,p
 			if PlayersWaitingmode1.size()>0:
 				for playersmode1 in PlayersWaitingmode1:
 					countmode1=playersmode1
-					if PlayersWaitingmode1[playersmode1].size()+players.size()<=3:
+					if PlayersWaitingmode1[playersmode1].size()+players.size()<=4:
 						for a in players:
 							PlayersWaitingmode1[playersmode1].append(players[a])
 							joined=true
@@ -377,7 +377,7 @@ remote func matchmaking(id, gamemode,players,party,player_election,player_name,p
 			if PlayersWaitingmode3.size()>0:
 				for playersmode3 in PlayersWaitingmode3:
 					countmode3=playersmode3
-					if PlayersWaitingmode3[playersmode3].size()+players.size()<=3:
+					if PlayersWaitingmode3[playersmode3].size()+players.size()<=4:
 						for a in players:
 							PlayersWaitingmode3[playersmode3].append(players[a])
 							joined=true
@@ -390,7 +390,7 @@ remote func matchmaking(id, gamemode,players,party,player_election,player_name,p
 		countmode3 = 1
 	if gamemode== "survival":
 		for matchmodel1ready in PlayersWaitingmode1:
-			if PlayersWaitingmode1[matchmodel1ready].size() == 2:
+			if PlayersWaitingmode1[matchmodel1ready].size() == 4:
 				new_Gamelobby(gamemode,PlayersWaitingmode1[matchmodel1ready],false)
 				PlayersWaitingmode1.erase(matchmodel1ready)
 	
@@ -420,7 +420,7 @@ remote func matchmaking(id, gamemode,players,party,player_election,player_name,p
 			PlayersWaitingmode2.erase(second_key)
 	if gamemode== "deathmatch":
 		for matchmodel3ready in PlayersWaitingmode3:
-			if PlayersWaitingmode3[matchmodel3ready].size() == 2:
+			if PlayersWaitingmode3[matchmodel3ready].size() == 4:
 				new_Gamelobby(gamemode,PlayersWaitingmode3[matchmodel3ready],false)
 				PlayersWaitingmode3.erase(matchmodel3ready)
 
