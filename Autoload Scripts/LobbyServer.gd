@@ -280,6 +280,7 @@ remote func authenticate(username, password):
 	for Player in PlayersDatabase:
 		if [Player.username, Player.password] == [username, password]:
 			#Validar conexion, traer jugador al lobby.
+			print("Se ha conectado ->" + str(Player.username))
 			Players_connected[username]=player_id
 			Players_name[player_id] = str(username)
 			if leaderboard_scores.has(username) != true:
@@ -391,6 +392,7 @@ remote func matchmaking(id, gamemode,players,party,player_election,player_name,p
 		countmode1 = 1
 		countmode2 = 1
 		countmode3 = 1
+		
 	if gamemode== "survival":
 		for matchmodel1ready in PlayersWaitingmode1:
 			if PlayersWaitingmode1[matchmodel1ready].size() == 4:
@@ -403,7 +405,7 @@ remote func matchmaking(id, gamemode,players,party,player_election,player_name,p
 		var second_key
 		var playersmode2
 		for teamreadymode2 in PlayersWaitingmode2:
-				if PlayersWaitingmode2[teamreadymode2].size() == 4:
+				if PlayersWaitingmode2[teamreadymode2].size() == 2:
 					if isready == 0 :
 						firsteam = PlayersWaitingmode2[teamreadymode2]
 						first_key=teamreadymode2
