@@ -112,7 +112,7 @@ func Remove_peer(peer_id):
 					team.queue_free()
 	print(Players_connected)
 	if Players_name.has(peer_id) and Players_connected.has(Players_name[peer_id]):
-		print("eliminé a ",Players_connected[Players_name[peer_id]])
+		print("eliminé a ", Players_name[peer_id])
 		Players_connected.erase(Players_name[peer_id])
 		Players_name.erase(peer_id)
 	
@@ -314,6 +314,7 @@ master func new_Player(Player, id):
 
 #Player es la informacion del que busca partida, y el gamemode que elige.
 remote func matchmaking(id, gamemode,players,party,player_election,player_name,party_player_election):
+	print("Jugador : " + str(player_name) + " buscando : " + str(gamemode))
 	if party == false:
 		Player_Selection[id]=[player_name,player_election]
 		if gamemode == "survival" :
