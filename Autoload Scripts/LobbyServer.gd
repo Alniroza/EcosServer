@@ -291,7 +291,7 @@ remote func authenticate(username, password):
 				get_node(str(username)).set_id_player(player_id)#
 			return rpc_id(player_id,"new_player", Player, player_id)
 			
-	return 0
+	return rpc_id(player_id,"failed_connection")
 	
 master func new_Player(Player, id):
 	#Agregamos al Lobby un nuevo Player, si no existe.
@@ -390,7 +390,7 @@ remote func matchmaking(id, gamemode,players,party,player_election,player_name,p
 		countmode3 = 1
 	if gamemode== "survival":
 		for matchmodel1ready in PlayersWaitingmode1:
-			if PlayersWaitingmode1[matchmodel1ready].size() == 4:
+			if PlayersWaitingmode1[matchmodel1ready].size() == 2:
 				new_Gamelobby(gamemode,PlayersWaitingmode1[matchmodel1ready],false)
 				PlayersWaitingmode1.erase(matchmodel1ready)
 	
@@ -420,7 +420,7 @@ remote func matchmaking(id, gamemode,players,party,player_election,player_name,p
 			PlayersWaitingmode2.erase(second_key)
 	if gamemode== "deathmatch":
 		for matchmodel3ready in PlayersWaitingmode3:
-			if PlayersWaitingmode3[matchmodel3ready].size() == 4:
+			if PlayersWaitingmode3[matchmodel3ready].size() == 2:
 				new_Gamelobby(gamemode,PlayersWaitingmode3[matchmodel3ready],false)
 				PlayersWaitingmode3.erase(matchmodel3ready)
 

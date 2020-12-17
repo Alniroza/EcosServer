@@ -35,7 +35,8 @@ func _ready():
 	peer.create_server(SERVER_PORT, MAX_PLAYERS)
 	get_tree().set_network_peer(peer)
 	print("El servidor esta ON en puerto ", SERVER_PORT)
-
+	for a in range (4):
+		print(a)
 
 func _player_connected(id):
 	# Called on both clients and server when a peer connects. Send my info to it.
